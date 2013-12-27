@@ -1,0 +1,51 @@
+<canvas width="640" height="480" id="can"></canvas>
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<script type="text/javascript">
+
+	var socket = io.connect();
+	var can, ctx;
+	var mouse_condition = false;
+	var data = new Array();
+
+	window.addEventListener( 'load', function() {
+
+		can = document.getElementById('can');
+		ctx = can.getContext('2d');
+
+		can.addEventListener( 'mousemove', function(e) {
+			if( mouse_condition) {
+				var rect = e.target.getBoundingClientRect();
+				var mex = e.clientX - rect.left;
+				var mey = e.clientY - rect.top;
+				ctx.beginPath();
+				ctx.arc( mex, mey, 5, 0, Math.PI*2, false );
+				ctx.fill();
+				data.push( [mex, mey] );
+			}
+		});
+
+		can.addEventListener( 'mousedown', function(e) {
+			mouse_condition = true;
+			data.length = 0;
+		});
+
+		can.addEventListener( 'mouseup', function(e) {
+			mouse_condition = false;
+			var msg = JSON.stringify( data );
+			console.log( ">>>" + msg );
+			socket.emit( 'message', msg );
+			data.length = 0;
+		});
+
+		socket.on( 'message', function( msg ) {
+			var points = JSON.parse( msg );
+			var j;
+			for( j=0; j<points.length; j++ ) {
+				var p = points[j];
+				ctx.beginPath();
+				ctx.arc( p[0], p[1], 5, 0, Math.PI*2, false );
+				ctx.fill();
+			}
+		});
+	});
+</script>
