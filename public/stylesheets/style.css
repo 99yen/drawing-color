@@ -6,3 +6,32 @@ body {
 a {
   color: #00B7FF;
 }
+
+#drawing-area {
+  width: 640px;
+  height: 480px;
+  padding: 10px;
+  background-color: gray;
+}
+
+#can {
+  background-color: white;
+}
+
+#palette-area {
+  width: 660px;
+  height: 100px;
+  padding: 10px;
+}
+
+.palette {
+  width: 30px;
+  height: 30px;
+  margin: 10px;
+  float: left;
+}
+
+#color-red  {background-color: red;}
+#color-blue {background-color: blue;}
+#color-green{background-color: green;}
+

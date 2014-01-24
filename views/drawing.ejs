@@ -1,4 +1,15 @@
+<div id="drawing-area">
 <canvas width="640" height="480" id="can"></canvas>
+</div>
+
+<div id="palette-area">
+
+<div id="color-red" class="palette" onClick="changeColor('red')"></div>
+<div id="color-blue" class="palette" onClick="changeColor('blue')"></div>
+<div id="color-green" class="palette" onClick="changeColor('green')"></div>
+
+</div>
+
 <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
 
@@ -7,17 +18,26 @@
 	var mouse_condition = false;
 	var data = new Array();
 
+	var fillColor;
+	
+	var changeColor = function(color) {
+		fillColor = color;
+		console.log(color);
+	};
+
 	window.addEventListener( 'load', function() {
 
 		can = document.getElementById('can');
 		ctx = can.getContext('2d');
-
+	
 		can.addEventListener( 'mousemove', function(e) {
 			if( mouse_condition) {
 				var rect = e.target.getBoundingClientRect();
 				var mex = e.clientX - rect.left;
 				var mey = e.clientY - rect.top;
+				
 				ctx.beginPath();
+				ctx.fillStyle = fillColor;
 				ctx.arc( mex, mey, 5, 0, Math.PI*2, false );
 				ctx.fill();
 				data.push( [mex, mey] );
