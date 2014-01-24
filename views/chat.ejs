@@ -2,7 +2,7 @@
 <script type="text/javascript">
 
 // connect to server
-var socket = io.connect();
+var socket = io.connect("ws://" + window.location.search + ":80");
 
 // when connected
 socket.on( 'connect', function(msg) {
