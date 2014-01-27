@@ -31,8 +31,17 @@ a {
   float: left;
 }
 
+.palette-button {
+  height: 30px;
+  margin:10px;
+  float: left;
+}
+
+.color-button {
+  height: 30px;
+}
+
 #color-black{background-color: black;}
 #color-red  {background-color: red;}
-#color-blue {background-color: blue;}
 #color-green{background-color: green;}
-
+#color-blue {background-color: blue;}

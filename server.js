@@ -38,20 +38,22 @@ app.listen(process.env.OPENSHIFT_NODEJS_PORT || 8000, process.env.OPENSHIFT_NODE
 });
 
 //socket
-var permanentData = new Array();
+var pData = new Array();
 var io = require('socket.io').listen(app);
 io.sockets.on('connection', function (socket) {
-	socket.emit('message-init', JSON.stringify(permanentData));
+	socket.emit('message-init', JSON.stringify(pData));
 	socket.on('message', function (msg) {
-		var recieveData = JSON.stringify(msg);
+		var recieveData = JSON.parse(msg);
 		if (recieveData['type'] == 'clear') {
-			permanentData.length = 0;
+			pData.length = 0;
 		}
 		else if(recieveData['type'] == 'draw' || recieveData['type'] == 'string') {
-			permanentData.push(recieveData);
+			pData.push(recieveData);
 		}
-		socket.emit('message', msg);
+		//socket.emit('message', msg);
 		socket.broadcast.emit('message', msg);
+		//console.log(recieveData);
+		//console.log(pData);
 	});
 	socket.on('disconnect', function() {
 		log.info('disconnected');

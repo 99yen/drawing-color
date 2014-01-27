@@ -6,10 +6,10 @@
 
 <div id="color-black" class="palette" onClick="changeColor('black')"></div>
 <div id="color-red" class="palette" onClick="changeColor('red')"></div>
-<div id="color-blue" class="palette" onClick="changeColor('blue')"></div>
 <div id="color-green" class="palette" onClick="changeColor('green')"></div>
+<div id="color-blue" class="palette" onClick="changeColor('blue')"></div>
 
-<button id="clear-button" type="button">Clear canvas</button>
+<div class="palette-button"><button id="clear-button" class="color-button" type="button">Clear canvas</button></div>
 </div>
 
 <script type="text/javascript" src="/socket.io/socket.io.js"></script>
@@ -22,10 +22,29 @@
 
 	var fillColor = 'black';
 	
+	function clearCanvas(ctx, can) {
+		ctx.fillStyle = "rgb(255,255,255)";
+		ctx.fillRect(0, 0, can.width, can.height);
+		console.log("clear canvas");
+	}
+
 	function changeColor(color) {
 		fillColor = color;
 		console.log(color);
 	};
+	
+	function drawPos(ctx, d) {
+		var pos = d['pos'];
+		var i;
+	
+		ctx.fillStyle = d['color'];
+		for(i=0; i<pos.length; i++ ) {
+			var p = pos[i];
+			ctx.beginPath();
+			ctx.arc( p[0], p[1], 5, 0, Math.PI*2, false );
+			ctx.fill();
+		}
+	}
 
 	window.addEventListener( 'load', function() {
 		can = document.getElementById('can');
@@ -34,9 +53,7 @@
 		cb = document.getElementById('clear-button');
 
 		cb.addEventListener('click', function(e) {
-			ctx.fillStyle = "rgb(255,255,255)";
-			ctx.fillRect(0, 0, can.width, can.height);
-			console.log("clear canvas");
+			clearCanvas(ctx, can);
 			socket.emit('message', JSON.stringify({type: 'clear'}));
 			console.log( ">>> send clear command" );
 			data.length = 0;
@@ -73,23 +90,21 @@
 		socket.on( 'message', function( msg ) {
 			var recieveData = JSON.parse(msg);
 			if(recieveData['type'] == 'draw') {
-				var points = recieveData['pos'];
-				var j;
-	
-				ctx.fillStyle = recieveData['color'];
-
-				for( j=0; j<points.length; j++ ) {
-					var p = points[j];
-					ctx.beginPath();
-					ctx.arc( p[0], p[1], 5, 0, Math.PI*2, false );
-					ctx.fill();
-				}
+				drawPos(ctx, recieveData);
 			}
 			else if(recieveData['type'] == 'clear') {
+				clearCanvas(ctx, can);
 				console.log("recieve clear command");
-				ctx.fillStyle = "rgb(255,255,255)";
-				ctx.fillRect(0, 0, can.width, can.height);
 				data.length = 0;
+			}
+		});
+
+		socket.on( 'message-init', function( msg ) {
+			var i;
+			var recieveData = JSON.parse(msg);
+			for (i=0; i<recieveData.length; i++) {
+				var points = recieveData[i]['pos'];
+				drawPos(ctx, recieveData[i]);	
 			}
 		});
 	});
