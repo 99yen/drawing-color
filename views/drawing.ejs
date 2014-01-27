@@ -9,28 +9,39 @@
 <div id="color-blue" class="palette" onClick="changeColor('blue')"></div>
 <div id="color-green" class="palette" onClick="changeColor('green')"></div>
 
+<button id="clear-button" type="button">Clear canvas</button>
 </div>
 
 <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
 
 	var socket = io.connect();
-	var can, ctx;
+	var can, ctx, cb;
 	var mouse_condition = false;
 	var data = new Array();
 
 	var fillColor = 'black';
 	
-	var changeColor = function(color) {
+	function changeColor(color) {
 		fillColor = color;
 		console.log(color);
 	};
 
 	window.addEventListener( 'load', function() {
-
 		can = document.getElementById('can');
 		ctx = can.getContext('2d');
-	
+		
+		cb = document.getElementById('clear-button');
+
+		cb.addEventListener('click', function(e) {
+			ctx.fillStyle = "rgb(255,255,255)";
+			ctx.fillRect(0, 0, can.width, can.height);
+			console.log("clear canvas");
+			socket.emit('message', JSON.stringify({type: 'clear'}));
+			console.log( ">>> send clear command" );
+			data.length = 0;
+		});
+		
 		can.addEventListener( 'mousemove', function(e) {
 			if( mouse_condition) {
 				var rect = e.target.getBoundingClientRect();
@@ -73,6 +84,12 @@
 					ctx.arc( p[0], p[1], 5, 0, Math.PI*2, false );
 					ctx.fill();
 				}
+			}
+			else if(recieveData['type'] == 'clear') {
+				console.log("recieve clear command");
+				ctx.fillStyle = "rgb(255,255,255)";
+				ctx.fillRect(0, 0, can.width, can.height);
+				data.length = 0;
 			}
 		});
 	});
