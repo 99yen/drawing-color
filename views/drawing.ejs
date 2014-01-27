@@ -4,6 +4,7 @@
 
 <div id="palette-area">
 
+<div id="color-black" class="palette" onClick="changeColor('black')"></div>
 <div id="color-red" class="palette" onClick="changeColor('red')"></div>
 <div id="color-blue" class="palette" onClick="changeColor('blue')"></div>
 <div id="color-green" class="palette" onClick="changeColor('green')"></div>
@@ -18,7 +19,7 @@
 	var mouse_condition = false;
 	var data = new Array();
 
-	var fillColor;
+	var fillColor = 'black';
 	
 	var changeColor = function(color) {
 		fillColor = color;
@@ -51,20 +52,27 @@
 
 		can.addEventListener( 'mouseup', function(e) {
 			mouse_condition = false;
-			var msg = JSON.stringify( data );
+			var sendData = {type: 'draw',color: fillColor, pos: data};
+			var msg = JSON.stringify(sendData);
 			console.log( ">>>" + msg );
-			socket.emit( 'message', msg );
+			socket.emit( 'message', msg);
 			data.length = 0;
 		});
 
 		socket.on( 'message', function( msg ) {
-			var points = JSON.parse( msg );
-			var j;
-			for( j=0; j<points.length; j++ ) {
-				var p = points[j];
-				ctx.beginPath();
-				ctx.arc( p[0], p[1], 5, 0, Math.PI*2, false );
-				ctx.fill();
+			var recieveData = JSON.parse(msg);
+			if(recieveData['type'] == 'draw') {
+				var points = recieveData['pos'];
+				var j;
+	
+				ctx.fillStyle = recieveData['color'];
+
+				for( j=0; j<points.length; j++ ) {
+					var p = points[j];
+					ctx.beginPath();
+					ctx.arc( p[0], p[1], 5, 0, Math.PI*2, false );
+					ctx.fill();
+				}
 			}
 		});
 	});
