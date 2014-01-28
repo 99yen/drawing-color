@@ -21,6 +21,7 @@ $ cd drawing-color
 $ npm install
 $ node server.js
 ```
+http://localhost:8000/drawing
 
 ## 履歴
 
