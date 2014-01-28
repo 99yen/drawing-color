@@ -17,13 +17,16 @@
 
 <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
-
+	
+	const LINE_WIDTH = 10;
+	
 	var socket = io.connect();
 	var can, ctx, cb;
 	var mouse_condition = false;
 	var data = new Array();
 
-	var fillColor = 'black';
+	var strokeColor = 'black';
+	var prevX, prevY;
 	
 	function clearCanvas(ctx, can) {
 		ctx.fillStyle = "rgb(255,255,255)";
@@ -32,22 +35,29 @@
 	}
 
 	function changeColor(color) {
-		fillColor = color;
+		strokeColor = color;
 		console.log(color);
-	};
+	}
 	
 	function drawPos(ctx, d) {
 		var pos = d['pos'];
 		var i;
 	
-		ctx.fillStyle = d['color'];
+		ctx.beginPath();
+		ctx.strokeStyle = d['color'];
+		ctx.lineWidth = LINE_WIDTH;
+		ctx.lineCap = 'round';
+		ctx.lineJoin = 'round';
+		ctx.moveTo(pos[0][0], pos[0][1]);
+				
 		for(i=0; i<pos.length; i++ ) {
-			var p = pos[i];
-			ctx.beginPath();
-			ctx.arc( p[0], p[1], 5, 0, Math.PI*2, false );
-			ctx.fill();
+			ctx.lineTo(pos[i][0], pos[i][1]);
 		}
+
+		ctx.stroke();
 	}
+	
+	
 
 	window.addEventListener( 'load', function() {
 		can = document.getElementById('can');
@@ -73,22 +83,37 @@
 				var mey = e.clientY - rect.top;
 				
 				ctx.beginPath();
-				ctx.fillStyle = fillColor;
-				ctx.arc( mex, mey, 5, 0, Math.PI*2, false );
-				ctx.fill();
+				ctx.strokeStyle = strokeColor;
+				ctx.lineWidth = LINE_WIDTH;
+				ctx.lineCap = 'round';
+				ctx.moveTo(prevX, prevY);
+				ctx.lineTo(mex, mey);
+				ctx.stroke();
 				data.push( [mex, mey] );
+
+				prevX = mex;
+				prevY = mey;
 			}
 		});
 
 		can.addEventListener( 'mousedown', function(e) {
 			mouse_condition = true;
 			data.length = 0;
+			
+			var rect = e.target.getBoundingClientRect();
+			var mex = e.clientX - rect.left;
+			var mey = e.clientY - rect.top;
+			data.push( [mex, mey] );
+			prevX = mex;
+			prevY = mey;
 		});
 
 		can.addEventListener( 'mouseup', function(e) {
 			mouse_condition = false;
-			var sendData = {type: 'draw',color: fillColor, pos: data};
+			var sendData = {type: 'draw',color: strokeColor, pos: data};
 			var msg = JSON.stringify(sendData);
+			console.log( ">>>" + msg );
+			socket.emit( 'message', msg);
 			data.length = 0;
 		});
 
@@ -109,7 +134,6 @@
 			var recieveData = JSON.parse(msg);
 			clearCanvas(ctx, can);
 			for (i=0; i<recieveData.length; i++) {
-				var points = recieveData[i]['pos'];
 				drawPos(ctx, recieveData[i]);	
 			}
 		});
