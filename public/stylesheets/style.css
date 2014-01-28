@@ -46,6 +46,10 @@ a {
 #color-green{background-color: green;}
 #color-blue {background-color: blue;}
 #color-yellow{background-color: yellow;}
-#color-orange {background-color: orange;}
-#color-purple {background-color: purple;}
-
+#color-orange{background-color: orange;}
+#color-purple{background-color: purple;}
+#color-white {
+  border: 2px #000 solid;
+  height: 26px;
+  width:  26px;
+}

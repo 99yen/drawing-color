@@ -11,7 +11,7 @@
 <div id="color-yellow" class="palette" onClick="changeColor('yellow')"></div>
 <div id="color-orange" class="palette" onClick="changeColor('orange')"></div>
 <div id="color-purple" class="palette" onClick="changeColor('purple')"></div>
-
+<div id="color-white" class="palette" onClick="changeColor('white')"></div>
 <div class="palette-button"><button id="clear-button" class="color-button" type="button">Clear canvas</button></div>
 </div>
 
@@ -55,6 +55,10 @@
 		
 		cb = document.getElementById('clear-button');
 
+		// NowLoading
+		ctx.font = "32px Arial";
+		ctx.fillText("Now Loading...", 230, 230);
+
 		cb.addEventListener('click', function(e) {
 			clearCanvas(ctx, can);
 			socket.emit('message', JSON.stringify({type: 'clear'}));
@@ -85,8 +89,6 @@
 			mouse_condition = false;
 			var sendData = {type: 'draw',color: fillColor, pos: data};
 			var msg = JSON.stringify(sendData);
-			console.log( ">>>" + msg );
-			socket.emit( 'message', msg);
 			data.length = 0;
 		});
 
@@ -105,6 +107,7 @@
 		socket.on( 'message-init', function( msg ) {
 			var i;
 			var recieveData = JSON.parse(msg);
+			clearCanvas(ctx, can);
 			for (i=0; i<recieveData.length; i++) {
 				var points = recieveData[i]['pos'];
 				drawPos(ctx, recieveData[i]);	
