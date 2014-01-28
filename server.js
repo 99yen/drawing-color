@@ -46,7 +46,7 @@ io.sockets.on('connection', function (socket) {
 		if (recieveData['type'] == 'clear') {
 			pData.length = 0;
 		}
-		else if(recieveData['type'] == 'draw' || recieveData['type'] == 'string') {
+		else if(recieveData['type'] == 'draw') {
 			pData.push(recieveData);
 		}
 		//socket.emit('message', msg);
