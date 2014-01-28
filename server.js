@@ -30,7 +30,6 @@ app.configure('production', function(){
 // Routes
 
 app.get( '/', routes.index );
-app.get( '/chat', routes.chat );
 app.get( '/drawing', routes.drawing );
 
 app.listen(process.env.OPENSHIFT_NODEJS_PORT || 8000, process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1', function(){
