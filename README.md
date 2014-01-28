@@ -28,6 +28,6 @@ $ node server.js
 2014/1/26 fork(99yen)  
 
 ## ライセンス
-
+from http://git.mesh.cx/gitbucket/suda/drawing  
 MIT License
 
