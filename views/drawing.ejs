@@ -21,14 +21,7 @@
 	const LINE_WIDTH = 10;
 	
 	//var socket = io.connect();
-	try {
-		// running on openshift
-		process.env.OPENSHIFT_APP_NAME;
-		var socket = io.connect('ws://' + window.location.search + ':8000');
-	} catch(e) {
-		// running on other server(local)
-		var socket = io.connect();
-	}
+	var socket = io.connect('ws://' + window.location.search + ':8000');
 	var can, ctx, cb;
 	var mouse_condition = false;
 	var data = new Array();
