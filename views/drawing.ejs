@@ -24,7 +24,7 @@
 	try {
 		// running on openshift
 		process.env.OPENSHIFT_APP_NAME;
-		var socket = io.connect('ws://' + window.location.search + ':80');
+		var socket = io.connect('ws://' + window.location.search + ':8000');
 	} catch(e) {
 		// running on other server(local)
 		var socket = io.connect();
